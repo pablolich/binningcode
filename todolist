@@ -1,0 +1,39 @@
+	Binn all the lines.
+
+	Things to try on all the galaxies
+	      Repeat everything but this time with a provided spectrum.
+
+	       1. Spectrum
+	       	  
+		  a. OPTION 1
+		  b. OPTION 2
+		  c. OPTION 3	
+	
+	
+	Make errors more specific, name galaxy, indicate relevant quantities...
+
+	In option 2, giving the code a list of rows to bin. my code gets rid of the zeros in the fluxes, so indexes change and the list is not valid anymore, it needs to be changed according to the performed subtraction
+
+        Take care of systematic error. Where we have both errors, choose the highest or just adding in quadrature (it is not correct tho)
+        
+
+	My code only accepts a csv file with al the lines. The user will provide the name for each line (even though I need to figure out the lookup table)
+	
+	Add input. Directory where the input files can be located and directory where the output files will go.
+	
+	Figure out a way to make my code accept not only velocities, but also wavelengths. I need observed wavelengths and now I don't have them. 
+	
+	Update numbers in instructions of the code. 
+
+	polish the code.	
+
+	Clean interpolation.py.
+
+	Make iterative the process flux binning idl fitting, new determination of the optimal binning.
+
+	Find a way of providing the necessary packages without the need of virt env Astroconda.
+	
+	Learn how latex and Github are a powerful combination and explain it in the podlock.
+	
+	Start looking at the code that does the fitting to make my own.
+
