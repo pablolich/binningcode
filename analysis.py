@@ -4,8 +4,8 @@ from astropy.io import fits
 from astropy.table import Table
 import os #to delete files once they have been used.
 import ipdb
-import pandas as pd
-import sys
+import pandas as pd 
+import sys 
 from functions import binningopt
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -31,6 +31,7 @@ SN3 = []
 
 #NO SPECTRUM
 
+totalbins = np.zeros(len(lines))
 for i in np.arange(len(t)): # Runs through every galaxy
     csv_file = np.zeros((len(linerr),len(data.columns[0][0])))    
     print 'galaxy #:', i
@@ -54,19 +55,29 @@ for i in np.arange(len(t)): # Runs through every galaxy
         
         l1.append(listb)
         SN1.append(S_N)
-        for k in np.arange(len(linerr)): #For every galaxy loop through all the lines.
-            l = t[2*k][i] #list with the fluxes
-            l = l[l!=0]
-            name = 'S_'+ k 
-            vars()[name] = sum(l[l1[i]])
+        S_N_lines = [] 
+        for k in np.arange(len(lines)): #For every galaxy loop through all the lines.
+            l = t[linerr[2*k]][i] #list with the fluxes 
+            l = l[l!=0] #subtract 0
+            if len(l) == 0:
+                S_N_lines.append('Error') 
+                pass
+            else:
+                signal = sum(l[l1[i]])
+                err = t[linerr[2*k+1]][i]
+                err = err[err!=0]
+                noise = np.sqrt(sum(err[l1[i]]**2))
+                S_N_lines.append(signal/noise)
+        totalbins = np.vstack((totalbins,S_N_lines))
     except (ValueError, IndexError) as e:
         print(e)
         l1.append('Error')
         SN1.append('Error')
-
+        totalbins = np.vstack((totalbins, np.zeros(len(lines))))
 
 nerrs = len([i for i in l1 if i == 'Error'])
-print'Number of errors:', nerrs 
+totalbins = totalbins[1:,:]
+totalbins = pd.DataFrame(np.transpose(totalbins), index = lines, columns = t['NAME'])
 
 #Bin all the lines according to l1.
 
