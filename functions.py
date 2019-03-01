@@ -8,11 +8,13 @@ from astropy.table import Table
 import sys
 import warnings
 
-def binningopt(flux_error, velocity, names, line, center, AGN, opt, spec = None, lam = None, bmin = None, bmax = None, tol = 20.0):
+def binningopt(input_path, flux_error, velocity, names, line, center, AGN, opt, output_path, spec = None, lam = None, bmin = None, bmax = None, tol = 20.0):
 
    #########################################################################################################
 
    '''This function determines the best binning according to the user specifications. It takes 8 to 13 arguments.
+   
+   0. path. String with the path where the files flux_error and velocities are kept.
 
    1. flux_error. String with the name of the file where fluxes and errors are kept. 
 
@@ -66,8 +68,8 @@ def binningopt(flux_error, velocity, names, line, center, AGN, opt, spec = None,
        err[i] = names[i]+'_err'
    
    namecol = np.asarray(zip(names, err)).flatten()
-   data = pd.read_csv(flux_error, header =None, names = namecol)
-   vel = np.genfromtxt(velocity) #Just an array.
+   data = pd.read_csv(input_path + '/' + flux_error, header =None, names = namecol)
+   vel = np.genfromtxt(input_path + '/' + velocity) #Just an array.
    if not vel.any():
       raise ValueError("All the elements in %s are zero, can't compute anything!" % velocity )
    #Select the specified line from provided data, remove zeros and rename indices and redefine center:
@@ -137,7 +139,7 @@ def binningopt(flux_error, velocity, names, line, center, AGN, opt, spec = None,
 
    #######   OPTION 1: Binning of the best rows   #######
 
-
+    
    if opt == 0:
       #The first step is order from higer to lower s/n, and get a vector with
       #the positions of the ordered s/n in the original array
@@ -333,7 +335,11 @@ def binningopt(flux_error, velocity, names, line, center, AGN, opt, spec = None,
       qnew = np.zeros((len(listb), 2))
       for i in np.arange(len(listb)):
          qnew[i, 0], qnew[i,1] = q[listb[i,0], 0], q[listb[i,1], 1]
-
+   try:
+       import os
+       os.mkdir(output_path + '/results')
+   except:
+       print 'Existing results directory. Files are being stored at: (not yet)', output_path + '/results'
    return(listb # Array with the optimal binning row ranges.
           , S_N # Array S/N reached after the binning.
           , specnew # DataFrame containing the aligned spectrum.
