@@ -18,11 +18,20 @@ selec = np.asarray([np.asarray([i[0]=='F' and i[-1]!='R' for i in np.asarray(t.k
 lines = np.asarray(t.keys())[selec] 
 
 
-selerr = np.asarray([np.asarray([i[0]=='F' and i[-6:]!='SYSERR' for i in np.asarray(t.keys())])])[0]
-syserrbool = np.asarray([np.asarray([i[0]=='F' and i[-6:]=='SYSERR' for i in np.asarray(t.keys())])])[0]
+selerr = np.asarray([np.asarray([i[0]=='F' and i[-6:]!='SYSERR' for i in np.asarray(t.keys())])])[0]#leave out systematic errors
+syserrbool = np.asarray([np.asarray([i[0]=='F' and i[-6:]=='SYSERR' for i in np.asarray(t.keys())])])[0]#identyfy systematic errors
 syserr = np.asarray(t.keys())[syserrbool]
 linerr =np.asarray(t.keys())[selerr] #To extract the data (fluxes and errors), create selerr
 data = t[linerr.tolist()][:] #Table with all lines and errors (cols) (not systematic errors) of all galaxies (rows).
+data_syserr = t[syserr.tolist()][:]#Table with systematic errors of all galaxyies.
+syserr = np.append(syserr, np.repeat('None_None', 31))
+donde = [np.where(linerr == i[:-7]) for i in syserr]
+donde = [np.where(linerr == i[:-7]) for i in syserr]
+donde = [int(i[0]) for i in donde  if i[0]]
+donde_err= [(np.asarray(donde)+1).tolist()][0]#select lines that have also sysetmatic error
+err = linerr[donde_err]
+data_err = t[err.tolist()][:]
+#select the systematic errors.
 AGN_flags = np.random.randint(2, size = len(t))
 l1 = []
 SN1 = []
@@ -47,14 +56,15 @@ for i in np.arange(len(t)): # Runs through every galaxy
     
     #OPTION 1
     try:
-        listb, S_N,  specnew, binnedflux, binnederror, binnedspec, qnew = binningopt(path = os.getcwd()+'/',
+        listb, S_N,  specnew, binnedflux, binnederror, binnedspec, qnew = binningopt(input_path = os.getcwd()+'/',
                                                                                      flux_error = 'gal.csv', 
                                                                                      velocity = 'vel.csv',
                                                                                      names = lines, 
                                                                                      line = lines[3],
                                                                                      center = 10,
                                                                                      AGN = AGN_flags[i],
-                                                                                     opt = 0)
+                                                                                     opt = 0, 
+                                                                                     output_path = os.getcwd())
         
         l1.append(listb)
         SN1.append(S_N)

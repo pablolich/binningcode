@@ -1,4 +1,8 @@
-	Binn all the lines.
+        Transform data_err and data_syserr to pd.DataFrames. find a way to sum them in  quadrature and make that the new error. after that there is no need for the last part regarding systematic errors.
+
+
+
+
 
 	Things to try on all the galaxies
 	      Repeat everything but this time with a provided spectrum.
@@ -32,8 +36,6 @@
 	Make iterative the process flux binning idl fitting, new determination of the optimal binning.
 
 	Find a way of providing the necessary packages without the need of virt env Astroconda.
-	
-	Learn how latex and Github are a powerful combination and explain it in the podlock.
 	
 	Start looking at the code that does the fitting to make my own.
 

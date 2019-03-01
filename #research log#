@@ -312,3 +312,8 @@ Generated a list with all listb from all galaxies.
 Fixed bug concerning the negative SN (it came from lines that only have one flux, and this one is negative).
 
 Implemented flagging when fluxes are negative. Diferent flag is reported when the line is not HB. This has been done in the wrapper code. 
+
+
+Fri Feb 22 13:38:37 EST 2019
+
+I generated a pd.Data frame with all the binned lines according to the optimal binning applied to the line of interest. Errors are not compute yet.
