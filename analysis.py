@@ -19,7 +19,9 @@ lines = np.asarray(t.keys())[selec]
 
 
 selerr = np.asarray([np.asarray([i[0]=='F' and i[-6:]!='SYSERR' for i in np.asarray(t.keys())])])[0]
-linerr = np.asarray(t.keys())[selerr] #To extract the data (fluxes and errors), create selerr
+syserrbool = np.asarray([np.asarray([i[0]=='F' and i[-6:]=='SYSERR' for i in np.asarray(t.keys())])])[0]
+syserr = np.asarray(t.keys())[syserrbool]
+linerr =np.asarray(t.keys())[selerr] #To extract the data (fluxes and errors), create selerr
 data = t[linerr.tolist()][:] #Table with all lines and errors (cols) (not systematic errors) of all galaxies (rows).
 AGN_flags = np.random.randint(2, size = len(t))
 l1 = []
@@ -45,7 +47,8 @@ for i in np.arange(len(t)): # Runs through every galaxy
     
     #OPTION 1
     try:
-        listb, S_N,  specnew, binnedflux, binnederror, binnedspec, qnew = binningopt(flux_error = 'gal.csv', 
+        listb, S_N,  specnew, binnedflux, binnederror, binnedspec, qnew = binningopt(path = os.getcwd()+'/',
+                                                                                     flux_error = 'gal.csv', 
                                                                                      velocity = 'vel.csv',
                                                                                      names = lines, 
                                                                                      line = lines[3],
@@ -55,8 +58,8 @@ for i in np.arange(len(t)): # Runs through every galaxy
         
         l1.append(listb)
         SN1.append(S_N)
-        S_N_lines = [] 
-        for k in np.arange(len(lines)): #For every galaxy loop through all the lines.
+        S_N_lines = []
+        for k in np.arange(len(lines)): #For galaxy i loop through all the lines.
             l = t[linerr[2*k]][i] #list with the fluxes 
             l = l[l!=0] #subtract 0
             if len(l) == 0:
@@ -65,9 +68,19 @@ for i in np.arange(len(t)): # Runs through every galaxy
             else:
                 signal = sum(l[l1[i]])
                 err = t[linerr[2*k+1]][i]
-                err = err[err!=0]
-                noise = np.sqrt(sum(err[l1[i]]**2))
-                S_N_lines.append(signal/noise)
+                ind = np.where((np.asarray([z[:-7] == lines[k] for z in syserr]))==True)[0]
+                if ind.size: #There line has a systematic error asociated.
+                    ind = int(ind) 
+                    err_sys = t[syserr[ind]][i]
+                    err_sys = err_sys[err_sys!=0]
+                    err = err[err!=0]
+                    err= np.sqrt(err_sys**2 + err**2)
+                    noise = np.sqrt(sum(err[l1[i]]**2))
+                    S_N_lines.append(signal/noise)
+                else:
+                    err = err[err!=0]
+                    noise = np.sqrt(sum(err[l1[i]]**2))
+                    S_N_lines.append(signal/noise)
         totalbins = np.vstack((totalbins,S_N_lines))
     except (ValueError, IndexError) as e:
         print(e)
